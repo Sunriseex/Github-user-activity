@@ -1,0 +1,1 @@
+This is simple CLI project to check github activity
