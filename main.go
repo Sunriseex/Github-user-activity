@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Event struct {
@@ -13,9 +14,10 @@ type Event struct {
 	Repo struct {
 		Name string `json:"name"`
 	} `json:"repo"`
+	CreatedAt string `json:"created_at"`
 }
 
-func fetchGitHubActivity(username string) {
+func fetchGitHubActivity(username string, filterType string) {
 	if username == "" {
 		fmt.Println("Please provide a GitHub username.")
 		return
@@ -57,21 +59,44 @@ func fetchGitHubActivity(username string) {
 		return
 	}
 
+	if len(events) == 0 {
+		fmt.Printf("No recent activities found for user '%s'\n", username)
+		return
+	}
+
 	fmt.Printf("Recent activity for '%s':\n\n", username)
-	for i, event := range events {
-		if i >= 10 { // output limit 10 events
+	count := 0
+	for _, event := range events {
+		if filterType != "" && event.Type != filterType {
+			continue
+		}
+		count++
+		if count > 10 {
 			break
 		}
-		fmt.Printf("- %s in %s\n", event.Type, event.Repo.Name)
+		createdAt, err := time.Parse(time.RFC3339, event.CreatedAt)
+		if err != nil {
+			fmt.Printf("Error parsing event %v\n", err)
+			continue
+		}
+		fmt.Printf("- %s in %s on %s\n", event.Type, event.Repo.Name, createdAt.Format("2006-01-02 15:04:05"))
+	}
+
+	if count == 0 {
+		fmt.Printf("No events found matching the filter '%s'.\n", filterType)
 	}
 }
 func main() {
 
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: github-activity <username>")
+	if len(os.Args) < 2 || len(os.Args) > 3 {
+		fmt.Println("Usage: github-activity <username> [event-type]")
 		return
 	}
 
 	username := os.Args[1]
-	fetchGitHubActivity(username)
+	var filterType string
+	if len(os.Args) == 3 {
+		filterType = os.Args[2]
+	}
+	fetchGitHubActivity(username, filterType)
 }
