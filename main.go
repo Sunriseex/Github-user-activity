@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	cacheFileName = "github_activity_cache.json"
+	cacheExpiry   = time.Hour
+)
+
 type Event struct {
 	Type string `json:"type"`
 	Repo struct {
@@ -17,7 +22,57 @@ type Event struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type CacheEntry struct {
+	Timestamp time.Time `json:"timestamp"`
+	Events    []Event   `json:"events"`
+}
+
+var cache = make(map[string]CacheEntry)
+
+func loadCache() {
+	data, err := os.ReadFile(cacheFileName)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		}
+		fmt.Printf("Error reading cache file: %v\n", err)
+		return
+	}
+	if err := json.Unmarshal(data, &cache); err != nil {
+		fmt.Printf("Error parsing cache file: %v\n", err)
+	}
+}
+
+func saveCache() {
+	data, err := json.MarshalIndent(cache, "", " ")
+	if err != nil {
+		fmt.Printf("Error serializing cache: %v\n", err)
+		return
+	}
+	if err := os.WriteFile(cacheFileName, data, 0644); err != nil {
+		fmt.Printf("Error writing cache file: %v\n", err)
+	}
+}
+
+func getCachedActivity(username string) ([]Event, bool) {
+	entry, exists := cache[username]
+	if !exists {
+		return nil, false
+	}
+	if time.Since(entry.Timestamp) > cacheExpiry {
+		return nil, false
+	}
+	return entry.Events, true
+}
+
 func fetchGitHubActivity(username string, filterType string) {
+	if events, found := getCachedActivity(username); found {
+		fmt.Printf("Using cached data for '%s':\n\n", username)
+		displayActivity(events, filterType)
+		return
+	}
+	fmt.Printf("Fetching data for '%s' from GitHub API...\n", username)
+
 	if username == "" {
 		fmt.Println("Please provide a GitHub username.")
 		return
@@ -65,6 +120,16 @@ func fetchGitHubActivity(username string, filterType string) {
 	}
 
 	fmt.Printf("Recent activity for '%s':\n\n", username)
+
+	cache[username] = CacheEntry{
+		Timestamp: time.Now(),
+		Events:    events,
+	}
+	saveCache()
+	displayActivity(events, filterType)
+}
+
+func displayActivity(events []Event, filterType string) {
 	count := 0
 	for _, event := range events {
 		if filterType != "" && event.Type != filterType {
@@ -86,7 +151,9 @@ func fetchGitHubActivity(username string, filterType string) {
 		fmt.Printf("No events found matching the filter '%s'.\n", filterType)
 	}
 }
+
 func main() {
+	loadCache()
 
 	if len(os.Args) < 2 || len(os.Args) > 3 {
 		fmt.Println("Usage: github-activity <username> [event-type]")
