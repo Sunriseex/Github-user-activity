@@ -29,15 +29,17 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
   ```bash
   go build -o github-user-activity
 
+---
 
 ## Usage
 Run the CLI with the following syntax:
   ```bash
   github-user-activity <username> [event-type]
 
+
+
 ## Arguments
 
   <username> (required): The GitHub username to fetch activity for.
   [event-type] (optional): The type of events to filter (e.g., PushEvent, ForkEvent).
 
-  
