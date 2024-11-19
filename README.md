@@ -24,7 +24,7 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
    ```bash
    git clone https://github.com/sunriseex/github-user-activity
    cd github-user-activity
-   
+
 2. Build the project:
 
    ```bash
@@ -39,9 +39,7 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
   ```bash
   github-user-activity <username> [event-type]
 
----
-
-## Arguments
+### Arguments
 
 - <username> (required): The GitHub username to fetch activity for.
 - [event-type] (optional): The type of events to filter (e.g., PushEvent, ForkEvent).
