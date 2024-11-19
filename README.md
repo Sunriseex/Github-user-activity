@@ -41,6 +41,6 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
 
 ### Arguments
 
-- <username> (required): The GitHub username to fetch activity for.
-- [event-type] (optional): The type of events to filter (e.g., PushEvent, ForkEvent).
+- `<username>` (required): The GitHub username to fetch activity for.
+- `[event-type]` (optional): The type of events to filter (e.g., PushEvent, ForkEvent).
 
