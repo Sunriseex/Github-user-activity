@@ -32,9 +32,9 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
 ---
 
 ## Usage
-Run the CLI with the following syntax:
-  ```bash
-  github-user-activity <username> [event-type]
+  Run the CLI with the following syntax:
+    ```bash
+    github-user-activity <username> [event-type]
 
 
 
