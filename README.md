@@ -28,7 +28,7 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
 2. Build the project:
 
    ```bash
-   go build -o github-user-activity
+   go build main.go
   
 ---
 
@@ -37,7 +37,7 @@ This is a simple command-line interface (CLI) tool written in Go that fetches an
 - Run the following command:
 
   ```bash
-  github-user-activity <username> [event-type]
+  ./main.exe <username> [event-type]
 
 ### Arguments
 
