@@ -2,6 +2,9 @@
 
 This is a simple command-line interface (CLI) tool written in Go that fetches and displays the recent activity of a GitHub user. The tool supports filtering events by type, caching results to avoid redundant API calls, and displaying events with timestamps.
 
+https://roadmap.sh/projects/github-user-activity
+
+
 ## Features
 
 - Fetches recent activity from the GitHub API.
